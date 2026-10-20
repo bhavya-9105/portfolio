@@ -1,0 +1,2696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhavya Shah | Game Developer & Software Engineering Portfolio</title>
+    <meta name="description"
+        content="Portfolio of Bhavya Shah - Unity 6 Game Developer, C# Programmer, and Computer Science & Designing undergraduate at SVIT, Vasad. Explore production Unity projects, gameplay systems, and technical competencies.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-space: #0A0A14;
+            --bg-card: rgba(22, 22, 42, 0.75);
+            --bg-card-hover: rgba(30, 30, 58, 0.85);
+            --border-glow: rgba(0, 217, 255, 0.25);
+            --border-highlight: #00D9FF;
+            --primary: #00D9FF;
+            --secondary: #7B61FF;
+            --accent: #FF007F;
+            --gold: #FFD700;
+            --success: #00FF9D;
+            --text-main: #F0F4FF;
+            --text-dim: #9AA5CE;
+            --font-head: 'Orbitron', -apple-system, sans-serif;
+            --font-sub: 'Rajdhani', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        /* Recruiter / Clean Mode Theme Overrides */
+        body.pro-mode {
+            --bg-space: #0F172A;
+            --bg-card: #1E293B;
+            --bg-card-hover: #334155;
+            --border-glow: #334155;
+            --border-highlight: #38BDF8;
+            --primary: #38BDF8;
+            --secondary: #818CF8;
+            --accent: #F43F5E;
+            --text-main: #F8FAFC;
+            --text-dim: #94A3B8;
+            --font-head: 'Inter', sans-serif;
+            --font-sub: 'Inter', sans-serif;
+        }
+
+        body.pro-mode .gamified-only {
+            display: none !important;
+        }
+
+        body.pro-mode #playerHud {
+            background: #0F172A;
+            border-bottom: 1px solid #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-space);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.7;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Background Canvas Grid */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* Fixed Top Player HUD */
+        #playerHud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: rgba(10, 10, 20, 0.92);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid var(--border-glow);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s;
+        }
+
+        .hud-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .player-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.15), rgba(123, 97, 255, 0.15));
+            border: 1px solid var(--primary);
+            padding: 0.35rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .player-badge:hover {
+            transform: scale(1.04);
+        }
+
+        .player-avatar {
+            font-size: 1.3rem;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .player-name {
+            font-family: var(--font-head);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+
+        .player-level {
+            font-family: var(--font-sub);
+            font-size: 0.75rem;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .xp-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 220px;
+        }
+
+        .xp-bar-bg {
+            flex: 1;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            position: relative;
+        }
+
+        .xp-bar-fill {
+            height: 100%;
+            width: 5%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            transition: width 0.5s ease-out;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .xp-label {
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            min-width: 65px;
+        }
+
+        .hud-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .coin-counter {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .hud-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glow);
+            color: var(--text-main);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-family: var(--font-sub);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.25s;
+        }
+
+        .hud-btn:hover {
+            background: rgba(0, 217, 255, 0.15);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 0 12px rgba(0, 217, 255, 0.3);
+        }
+
+        .hud-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #000;
+            font-weight: 700;
+            border-color: var(--primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Hero Section */
+        #hero {
+            padding: 8rem 0 3.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            padding: 0.4rem 1.1rem;
+            border-radius: 30px;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            animation: pulse 3s infinite;
+        }
+
+        .hero-title {
+            font-family: var(--font-head);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--primary) 50%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 35px rgba(0, 217, 255, 0.3);
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-sub);
+            font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+            color: var(--text-dim);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .meta-tag {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-tag strong {
+            color: var(--primary);
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0A0A14;
+            font-family: var(--font-head);
+            font-weight: 800;
+            font-size: 0.95rem;
+            padding: 0.9rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(0, 217, 255, 0.55);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0.9rem 1.8rem;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid var(--border-glow);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 217, 255, 0.15);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* Recruiter Internship Callout Banner */
+        .recruiter-overview-banner {
+            background: linear-gradient(135deg, rgba(22, 22, 42, 0.85), rgba(30, 30, 60, 0.8));
+            border: 1px solid rgba(0, 217, 255, 0.35);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 217, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recruiter-overview-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+        }
+
+        .recruiter-banner-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .recruiter-badge-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: var(--font-code);
+            font-size: 0.76rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .recruiter-banner-title {
+            font-family: var(--font-head);
+            font-size: 1.3rem;
+            color: #FFFFFF;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .recruiter-banner-meta {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            margin-top: 0.2rem;
+        }
+
+        .recruiter-banner-meta span strong {
+            color: var(--text-main);
+        }
+
+        .recruiter-banner-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-resume-download {
+            background: linear-gradient(135deg, var(--gold), #FFA500);
+            color: #0A0A14 !important;
+            font-weight: 800;
+            font-family: var(--font-sub);
+            padding: 0.65rem 1.4rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.92rem;
+            transition: all 0.25s;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            border: none;
+        }
+
+        .btn-resume-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(255, 215, 0, 0.45);
+            background: linear-gradient(135deg, #FFE066, #FFB733);
+        }
+
+        /* Section Styling */
+        section {
+            padding: 4rem 0;
+            position: relative;
+        }
+
+        .section-header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .section-badge {
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .section-title {
+            font-family: var(--font-head);
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 800;
+            color: var(--text-main);
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .section-desc {
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 1rem auto 0;
+            font-size: 1rem;
+        }
+
+        /* Filter Controls */
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dim);
+            padding: 0.5rem 1.25rem;
+            border-radius: 25px;
+            font-family: var(--font-sub);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(123, 97, 255, 0.2));
+            color: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.25);
+        }
+
+        /* Quest / Project Grid */
+        .quest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2rem;
+        }
+
+        .quest-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 14px;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+        }
+
+        .quest-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .quest-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 40px rgba(0, 217, 255, 0.2);
+            background: var(--bg-card-hover);
+        }
+
+        .quest-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .quest-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.06), rgba(123, 97, 255, 0.04));
+        }
+
+        .quest-meta-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .quest-rank {
+            font-family: var(--font-head);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            background: rgba(0, 217, 255, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .quest-rank.rank-s {
+            background: rgba(255, 0, 127, 0.18);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .quest-reward {
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .quest-title {
+            font-family: var(--font-head);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+        }
+
+        .quest-timeframe {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            font-family: var(--font-sub);
+        }
+
+        .quest-body {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quest-desc {
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .quest-tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-rune {
+            background: rgba(0, 217, 255, 0.08);
+            border: 1px solid rgba(0, 217, 255, 0.25);
+            color: var(--primary);
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .tech-rune:hover {
+            background: rgba(0, 217, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .quest-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .quest-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.7rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-family: var(--font-sub);
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            transition: all 0.25s;
+        }
+
+        .quest-btn:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0A0A14;
+            border-color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 217, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .quest-btn.btn-claim {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.4);
+            color: var(--gold);
+        }
+
+        .quest-btn.btn-claim.claimed {
+            background: rgba(0, 255, 157, 0.15);
+            border-color: var(--success);
+            color: var(--success);
+            cursor: default;
+        }
+
+        /* ==========================================================
+           Technical Competencies & Recruiter Skills Grid
+           ========================================================== */
+        .skills-recruiter-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+        }
+
+        .skills-compact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .skills-compact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .skill-domain-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 14px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.15rem;
+            backdrop-filter: blur(12px);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .skill-domain-card:hover {
+            border-color: rgba(0, 217, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 217, 255, 0.1);
+        }
+
+        .domain-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .domain-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .domain-icon {
+            font-size: 1.3rem;
+        }
+
+        .domain-title {
+            font-family: var(--font-head);
+            font-size: 1.1rem;
+            color: var(--text-main);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .domain-tag {
+            font-family: var(--font-code);
+            font-size: 0.7rem;
+            color: var(--primary);
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(0, 217, 255, 0.25);
+            padding: 0.2rem 0.55rem;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .domain-tag.gold {
+            color: var(--gold);
+            background: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .domain-tag.purple {
+            color: #A78BFA;
+            background: rgba(123, 97, 255, 0.12);
+            border-color: rgba(123, 97, 255, 0.3);
+        }
+
+        .domain-tag.green {
+            color: var(--success);
+            background: rgba(0, 255, 157, 0.1);
+            border-color: rgba(0, 255, 157, 0.3);
+        }
+
+        .skill-items-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+        }
+
+        .skill-item-block {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .skill-item-block:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(0, 217, 255, 0.25);
+            transform: translateX(2px);
+        }
+
+        .skill-item-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        .skill-label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-family: var(--font-body);
+        }
+
+        .skill-level-badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: var(--font-code);
+            white-space: nowrap;
+        }
+
+        .level-proficient {
+            background: rgba(0, 217, 255, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(0, 217, 255, 0.4);
+        }
+
+        .level-working {
+            background: rgba(123, 97, 255, 0.15);
+            color: #C4B5FD;
+            border: 1px solid rgba(123, 97, 255, 0.35);
+        }
+
+        .level-academic {
+            background: rgba(56, 189, 248, 0.12);
+            color: #7DD3FC;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .level-certified {
+            background: rgba(255, 215, 0, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+        }
+
+        .skill-detail-text {
+            font-size: 0.81rem;
+            color: var(--text-dim);
+            line-height: 1.45;
+            margin-bottom: 0.55rem;
+        }
+
+        .skill-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            align-items: center;
+        }
+
+        .skill-chip {
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: #CBD5E1;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-family: var(--font-code);
+        }
+
+        .card-project-proof {
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            padding-top: 0.65rem;
+            margin-top: 0.2rem;
+            font-size: 0.76rem;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .proof-label {
+            color: #64748B;
+            font-weight: 600;
+        }
+
+        .proof-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .proof-link:hover {
+            color: #FFF;
+            text-decoration: underline;
+        }
+
+        /* Leadership & Soft Skills Spotlight Card (Full Width) */
+        .leadership-spotlight-card {
+            background: linear-gradient(135deg, rgba(22, 22, 42, 0.8), rgba(35, 25, 55, 0.75));
+            border: 1px solid rgba(123, 97, 255, 0.35);
+            border-radius: 14px;
+            padding: 1.5rem 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .leadership-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 900px) {
+            .leadership-grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .lead-item-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .lead-item-box h4 {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0;
+            font-family: var(--font-body);
+            font-weight: 700;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .lead-badge {
+            font-size: 0.68rem;
+            font-family: var(--font-code);
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .lead-badge.tp {
+            background: rgba(0, 255, 157, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        .lead-badge.karate {
+            background: rgba(255, 0, 127, 0.15);
+            color: #FF66A3;
+            border: 1px solid rgba(255, 0, 127, 0.3);
+        }
+
+        .lead-badge.tech {
+            background: rgba(255, 215, 0, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .lead-desc {
+            font-size: 0.81rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Guild & Laurels (Timeline) */
+        .timeline-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .timeline-card:hover {
+            transform: translateX(6px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-family: var(--font-head);
+            font-size: 1.15rem;
+            color: var(--text-main);
+        }
+
+        .timeline-badge {
+            background: rgba(0, 217, 255, 0.12);
+            color: var(--primary);
+            font-family: var(--font-code);
+            font-size: 0.78rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 217, 255, 0.25);
+        }
+
+        .timeline-desc {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* Achievements Grid */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .achievement-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 10px;
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            transition: all 0.3s;
+        }
+
+        .achievement-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.15);
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .achievement-info h4 {
+            font-family: var(--font-head);
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        .achievement-info p {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        /* Boss Chamber / Contact */
+        .boss-chamber {
+            background: linear-gradient(135deg, rgba(22, 22, 42, 0.9), rgba(10, 10, 20, 0.95));
+            border: 2px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 3.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(123, 97, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .boss-chamber::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 217, 255, 0.15), transparent 70%);
+            pointer-events: none;
+        }
+
+        .contact-links-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.25rem;
+            margin-top: 2rem;
+        }
+
+        .contact-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glow);
+            color: var(--text-main);
+            padding: 0.9rem 1.8rem;
+            border-radius: 10px;
+            font-family: var(--font-head);
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.3s;
+        }
+
+        .contact-btn:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0A0A14;
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* Toast Container */
+        #toastContainer {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            pointer-events: none;
+        }
+
+        .toast-item {
+            background: rgba(15, 15, 30, 0.95);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            padding: 0.85rem 1.25rem;
+            color: #fff;
+            font-family: var(--font-sub);
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.35);
+            animation: slideInRight 0.3s ease-out forwards;
+            pointer-events: auto;
+        }
+
+        .toast-item.level-up {
+            border-color: var(--gold);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Trophies Modal */
+        #trophyModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 15, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        #trophyModal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #121226;
+            border: 2px solid var(--border-glow);
+            border-radius: 16px;
+            max-width: 650px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-family: var(--font-head);
+            font-size: 1.3rem;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--accent);
+        }
+
+        .trophy-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .trophy-row.unlocked {
+            border-color: rgba(255, 215, 0, 0.4);
+            background: rgba(255, 215, 0, 0.06);
+        }
+
+        .trophy-status {
+            margin-left: auto;
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .trophy-status.locked {
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .trophy-status.unlocked {
+            color: var(--gold);
+            background: rgba(255, 215, 0, 0.15);
+            font-weight: 700;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 3rem 0;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-top: 4rem;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.03);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 860px) {
+            .xp-container {
+                display: none;
+            }
+
+            #playerHud {
+                padding: 0 1rem;
+            }
+
+            .hud-btn span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Ambient Canvas Grid -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Persistent Top Player HUD -->
+    <nav id="playerHud">
+        <div class="hud-left">
+            <div class="player-badge" id="playerProfileTrigger" title="Click to view Trophies">
+                <div class="player-avatar">👾</div>
+                <div class="player-info">
+                    <span class="player-name">BHAVYA</span>
+                    <span class="player-level" id="playerLevelDisplay">LVL 1 Novice</span>
+                </div>
+            </div>
+
+            <div class="xp-container gamified-only">
+                <div class="xp-bar-bg">
+                    <div class="xp-bar-fill" id="xpBarFill"></div>
+                </div>
+                <span class="xp-label" id="xpText">0 / 3000 XP</span>
+            </div>
+        </div>
+
+        <div class="hud-right">
+            <div class="coin-counter gamified-only" title="Persistent Coins earned in arcade and quests">
+                🪙 <span id="coinCount">0</span>
+            </div>
+
+            <button class="hud-btn gamified-only" id="sfxToggleBtn" title="Toggle 8-bit sound FX">
+                <span id="sfxIcon">🔊</span> <span>Sound</span>
+            </button>
+
+            <button class="hud-btn gamified-only" id="trophyBtn" title="View unlocked achievements">
+                🏆 <span id="trophyCount">0/8</span>
+            </button>
+
+            <button class="hud-btn" id="modeSwitchBtn" title="Toggle between Gamer Mode and Clean Recruiter Mode">
+                <span id="modeIcon">💼</span> <span id="modeText">Pro Mode</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <header id="hero">
+            <div class="hero-chip">⚔️ Level 1 Developer Quest • Active Session</div>
+            <h1 class="hero-title">BHAVYA SHAH</h1>
+            <div class="hero-subtitle">Unity Game Developer • C# Programmer • AI & Web Explorer</div>
+
+            <div class="hero-meta-row">
+                <div class="meta-tag">📍 <strong>Vadodara, Gujarat</strong></div>
+                <div class="meta-tag">🎓 <strong>SVIT B.E. (CPI: 8.30)</strong></div>
+                <div class="meta-tag">🥋 <strong>2nd DAN Karate Black Belt</strong></div>
+                <div class="meta-tag">✉️ <strong>24csd50@svitvasad.ac.in</strong></div>
+            </div>
+
+            <div class="hero-actions">
+                <a href="#projects" class="btn-primary" onclick="claimXp(50, 'Explored Projects')">🚀 Shipped
+                    Projects</a>
+                <a href="#skills" class="btn-secondary">⚡ Technical Skills</a>
+                <a href="Resume_Bhavya.pdf" target="_blank" class="btn-secondary"
+                    style="border-color: var(--gold); color: var(--gold); font-weight: 700;"
+                    onclick="claimXp(150, 'Viewed Resume')">📄 View Resume (PDF)</a>
+                <a href="#contact" class="btn-secondary" onclick="claimXp(100, 'Get In Touch')">🤝 Get In Touch</a>
+            </div>
+        </header>
+
+        <!-- Featured Projects / Quest Log -->
+        <section id="projects">
+            <div class="section-header">
+                <span class="section-badge">Mission Dossier</span>
+                <h2 class="section-title">Featured Projects & Quests</h2>
+                <p class="section-desc">Select an active quest to inspect architecture, combat mechanics, and live
+                    playable builds.</p>
+            </div>
+
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">All Missions (7)</button>
+                <button class="filter-btn" data-filter="game">Game Dev (3)</button>
+                <button class="filter-btn" data-filter="ai">AI & APIs (1)</button>
+                <button class="filter-btn" data-filter="web">Web Sorcery (3)</button>
+            </div>
+
+            <div class="quest-grid" id="questGrid">
+                <!-- Quest 1: NEURAL OVERRIDE -->
+                <div class="quest-card" data-category="game">
+                    <div class="quest-header">
+                        <div class="quest-meta-line">
+                            <span class="quest-rank rank-s">S-RANK RAID</span>
+                            <span class="quest-reward">+500 XP • 50 🪙</span>
+                        </div>
+                        <h3 class="quest-title">NEURAL OVERRIDE</h3>
+                        <div class="quest-timeframe">2D Action-Survival • Sep 2026 – Present • Unity 6 & C#</div>
+                    </div>
+                    <div class="quest-body">
+                        <p class="quest-desc">
+                            Top-down 2D action-survival game built with Unity 6. Engineered smooth movement and
+                            360-degree aiming across the X–Y plane, raycast laser combat, a persistent coin economy,
+                            modular upgrade shop, and multi-level procedural environments. Script scaffolding
+                            accelerated with Antigravity CLI and MCP servers.
+                        </p>
+                        <div class="quest-tech-tags">
+                            <span class="tech-rune">Unity 6</span>
+                            <span class="tech-rune">C#</span>
+                            <span class="tech-rune">Raycast Combat</span>
+                            <span class="tech-rune">360° Aiming</span>
+                            <span class="tech-rune">Economy Engine</span>
+                            <span class="tech-rune">Antigravity CLI</span>
+                        </div>
+                        <div class="quest-actions">
+                            <a href="https://github.com/bhavya-9105" target="_blank" class="quest-btn">GitHub Repo
+                                🔗</a>
+                            <button class="quest-btn btn-claim gamified-only"
+                                onclick="claimQuestXp(this, 500, 50, 'Neural Override Quest')">Claim XP ⚡</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quest 2: RPG Game Development -->
+                <div class="quest-card" data-category="game">
+                    <div class="quest-header">
+                        <div class="quest-meta-line">
+                            <span class="quest-rank">A-RANK DUNGEON</span>
+                            <span class="quest-reward">+400 XP • 40 🪙</span>
+                        </div>
+                        <h3 class="quest-title">RPG Game Development</h3>
+                        <div class="quest-timeframe">2D Action RPG • Jul 2026 – Present • Unity & C#</div>
+                    </div>
+                    <div class="quest-body">
+                        <p class="quest-desc">
+                            Building a beginner-level RPG in Unity using C# following structured game development
+                            principles. Implemented responsive player movement controllers, melee and projectile combat
+                            systems, animation state machines, hitbox detection, and seamless multi-scene management.
+                        </p>
+                        <div class="quest-tech-tags">
+                            <span class="tech-rune">Unity</span>
+                            <span class="tech-rune">C#</span>
+                            <span class="tech-rune">2D RPG</span>
+                            <span class="tech-rune">Hitbox Combat</span>
+                            <span class="tech-rune">Animation States</span>
+                            <span class="tech-rune">Scene Mgmt</span>
+                        </div>
+                        <div class="quest-actions">
+                            <a href="https://github.com/bhavya-9105/RPG-Game" target="_blank" class="quest-btn">GitHub
+                                Repo 🔗</a>
+                            <button class="quest-btn btn-claim gamified-only"
+                                onclick="claimQuestXp(this, 400, 40, 'RPG Game Quest')">Claim XP ⚡</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quest 3: AI Blog Generator -->
+                <div class="quest-card" data-category="ai">
+                    <div class="quest-header">
+                        <div class="quest-meta-line">
+                            <span class="quest-rank">ARCANE ARTIFACT</span>
+                            <span class="quest-reward">+350 XP • 35 🪙</span>
+                        </div>
+                        <h3 class="quest-title">AI Blog Generator</h3>
+                        <div class="quest-timeframe">AI & Web App • Jul 2026 – Aug 2026 • Gemini API</div>
+                    </div>
+                    <div class="quest-body">
+                        <p class="quest-desc">
+                            Intelligent AI-assisted content creation tool integrating the Google Gemini API. Developed
+                            core application logic, structured prompt engineering pipelines, dynamic content generation,
+                            robust error handling, and end-to-end API debugging.
+                        </p>
+                        <div class="quest-tech-tags">
+                            <span class="tech-rune">Gemini API</span>
+                            <span class="tech-rune">Prompt Engineering</span>
+                            <span class="tech-rune">JavaScript</span>
+                            <span class="tech-rune">API Integration</span>
+                            <span class="tech-rune">AI-Assisted Dev</span>
+                        </div>
+                        <div class="quest-actions">
+                            <a href="https://github.com/bhavya-9105" target="_blank" class="quest-btn">GitHub Repo
+                                🔗</a>
+                            <button class="quest-btn btn-claim gamified-only"
+                                onclick="claimQuestXp(this, 350, 35, 'AI Generator Quest')">Claim XP ⚡</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quest 4: Roll-a-Ball 3D -->
+                <div class="quest-card" data-category="game">
+                    <div class="quest-header">
+                        <div class="quest-meta-line">
+                            <span class="quest-rank">PHYSICS TRIAL</span>
+                            <span class="quest-reward">+300 XP • 30 🪙</span>
+                        </div>
+                        <h3 class="quest-title">Roll-a-Ball: Enhanced Edition</h3>
+                        <div class="quest-timeframe">3D Physics Game • Unity 6 & C#</div>
+                    </div>
+                    <div class="quest-body">
+                        <p class="quest-desc">
+                            An advanced 3D game built with Unity 6. Features custom particle systems for explosions,
+                            dust trails, and sparkle effects. Includes advanced camera logic with screen shake
+                            mechanics, a complete UI navigation system, Rigidbody physics movement, and custom kill
+                            plane logic.
+                        </p>
+                        <div class="quest-tech-tags">
+                            <span class="tech-rune">Unity 6</span>
+                            <span class="tech-rune">C#</span>
+                            <span class="tech-rune">Particle Systems</span>
+                            <span class="tech-rune">Rigidbody Physics</span>
+                            <span class="tech-rune">Screen Shake</span>
+                            <span class="tech-rune">UI/UX</span>
+                        </div>
+                        <div class="quest-actions">
+                            <a href="https://bhavya-9105.itch.io/roll-a-ball" target="_blank" class="quest-btn">Play on
+                                itch.io 🎮</a>
+                            <a href="https://github.com/bhavya-9105/Roll-a-Ball" target="_blank"
+                                class="quest-btn">GitHub Repo 🔗</a>
+                            <button class="quest-btn btn-claim gamified-only"
+                                onclick="claimQuestXp(this, 300, 30, 'Roll-a-Ball Quest')">Claim XP ⚡</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quest 5: Pomodoro Pro -->
+                <div class="quest-card" data-category="web">
+                    <div class="quest-header">
+                        <div class="quest-meta-line">
+                            <span class="quest-rank">TIME SORCERY</span>
+                            <span class="quest-reward">+200 XP • 20 🪙</span>
+                        </div>
+                        <h3 class="quest-title">Pomodoro Pro</h3>
+                        <div class="quest-timeframe">Productivity Engine • HTML5, CSS3, JavaScript</div>
+                    </div>
+                    <div class="quest-body">
+                        <p class="quest-desc">
+                            A feature-rich productivity timer application with streak tracking, customizable
+                            backgrounds, and rest period generation. Demonstrates complex client-side state management,
+                            smooth micro-animations, and responsive design.
+                        </p>
+                        <div class="quest-tech-tags">
+                            <span class="tech-rune">HTML5</span>
+                            <span class="tech-rune">CSS3</span>
+                            <span class="tech-rune">JavaScript</span>
+                            <span class="tech-rune">State Engine</span>
+                            <span class="tech-rune">Audio Cues</span>
+                        </div>
+                        <div class="quest-actions">
+                            <a href="https://bhavya-9105.github.io/pomodoropro/" target="_blank" class="quest-btn">Live
+                                App 🌐</a>
+                            <button class="quest-btn btn-claim gamified-only"
+                                onclick="claimQuestXp(this, 200, 20, 'Pomodoro Quest')">Claim XP ⚡</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quest 6: Basic Calculator -->
+                <div class="quest-card" data-category="web">
+                    <div class="quest-header">
+                        <div class="quest-meta-line">
+                            <span class="quest-rank">LOGIC CRUCIBLE</span>
+                            <span class="quest-reward">+150 XP • 15 🪙</span>
+                        </div>
+                        <h3 class="quest-title">Basic Calculator</h3>
+                        <div class="quest-timeframe">Functional Tool • HTML5, CSS3, JavaScript</div>
+                    </div>
+                    <div class="quest-body">
+                        <p class="quest-desc">
+                            A clean, user-friendly calculator with robust arithmetic operations. Demonstrates clean code
+                            practices, DOM synchronization, keyboard event bindings, and mobile-friendly responsive
+                            layout.
+                        </p>
+                        <div class="quest-tech-tags">
+                            <span class="tech-rune">HTML5</span>
+                            <span class="tech-rune">CSS3</span>
+                            <span class="tech-rune">JavaScript</span>
+                            <span class="tech-rune">DOM Logic</span>
+                        </div>
+                        <div class="quest-actions">
+                            <a href="https://bhavya-9105.github.io/calculator/" target="_blank" class="quest-btn">Live
+                                App 🌐</a>
+                            <button class="quest-btn btn-claim gamified-only"
+                                onclick="claimQuestXp(this, 150, 15, 'Calculator Quest')">Claim XP ⚡</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quest 7: Rose Day Page -->
+                <div class="quest-card" data-category="web">
+                    <div class="quest-header">
+                        <div class="quest-meta-line">
+                            <span class="quest-rank">VISUAL GALA</span>
+                            <span class="quest-reward">+150 XP • 15 🪙</span>
+                        </div>
+                        <h3 class="quest-title">Rose Day Page</h3>
+                        <div class="quest-timeframe">Interactive Web • HTML5, CSS3, JavaScript</div>
+                    </div>
+                    <div class="quest-body">
+                        <p class="quest-desc">
+                            A vibrant celebration page showcasing modern frontend design, smooth CSS keyframe
+                            animations, audio effects, and micro-interactions.
+                        </p>
+                        <div class="quest-tech-tags">
+                            <span class="tech-rune">HTML5</span>
+                            <span class="tech-rune">CSS3</span>
+                            <span class="tech-rune">Keyframes</span>
+                            <span class="tech-rune">Animations</span>
+                        </div>
+                        <div class="quest-actions">
+                            <a href="https://bhavya-9105.github.io/roseday/" target="_blank" class="quest-btn">Live App
+                                🌐</a>
+                            <button class="quest-btn btn-claim gamified-only"
+                                onclick="claimQuestXp(this, 150, 15, 'Rose Day Quest')">Claim XP ⚡</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Skills & Internship Competencies -->
+        <section id="skills">
+            <div class="section-header">
+                <span class="section-badge">INTERNSHIP CANDIDATE TOOLSET</span>
+                <h2 class="section-title">Technical Skills & Competencies</h2>
+                <p class="section-desc">Grounded in production game builds, engineering coursework, and real-world
+                    execution. Formatted for hiring managers and technical recruiters evaluating internship candidacy.
+                </p>
+            </div>
+
+            <!-- Recruiter Quick-Scan & Resume Dossier Banner -->
+            <div class="recruiter-overview-banner">
+                <div class="recruiter-banner-left">
+                    <span class="recruiter-badge-chip">🎯 Internship Candidate Profile</span>
+                    <h3 class="recruiter-banner-title">Game Developer & Software Engineering Intern</h3>
+                    <div class="recruiter-banner-meta">
+                        <span>🎓 <strong>SVIT, Vasad</strong> (B.E. Computer Science & Designing • CPI: 8.30)</span>
+                        <span>⚡ <strong>Primary Focus:</strong> Unity 6, C#, 2D Gameplay & Combat Mechanics</span>
+                        <span>📍 <strong>Location:</strong> Vadodara, Gujarat (Open to On-Site / Remote)</span>
+                    </div>
+                </div>
+                <div class="recruiter-banner-right">
+                    <a href="Resume_Bhavya.pdf" target="_blank" class="btn-resume-download">
+                        📄 Download Resume (PDF)
+                    </a>
+                </div>
+            </div>
+
+            <div class="skills-recruiter-container">
+                <!-- 2x2 Grid of Technical Competencies -->
+                <div class="skills-compact-grid">
+
+                    <!-- Panel 1: Game Development (Primary Focus) -->
+                    <div class="skill-domain-card">
+                        <div class="domain-card-header">
+                            <div class="domain-title-group">
+                                <span class="domain-icon">🎮</span>
+                                <h3 class="domain-title">Game Development & Engine</h3>
+                            </div>
+                            <span class="domain-tag">Primary Specialization</span>
+                        </div>
+                        <div class="skill-items-stack">
+                            <!-- Skill 1 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">Unity 6 & Unity Editor</span>
+                                    <span class="skill-level-badge level-proficient">Proficient</span>
+                                </div>
+                                <div class="skill-detail-text">2D and 3D game development, physics simulation
+                                    (Rigidbody2D/3D), prefab architecture, ScriptableObjects, and scene management.
+                                </div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">2D/3D Physics</span>
+                                    <span class="skill-chip">Prefab Architecture</span>
+                                    <span class="skill-chip">ScriptableObjects</span>
+                                    <span class="skill-chip">Scene Management</span>
+                                </div>
+                            </div>
+
+                            <!-- Skill 2 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">2D Gameplay & Raycasting Mechanics</span>
+                                    <span class="skill-level-badge level-proficient">Proficient</span>
+                                </div>
+                                <div class="skill-detail-text">Smooth X–Y plane player movement controllers, 360-degree
+                                    cursor aiming, raycast-based laser combat, layer masking, and bullet hitboxes.</div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">Player Movement</span>
+                                    <span class="skill-chip">360° Cursor Aim</span>
+                                    <span class="skill-chip">Physics2D.Raycast</span>
+                                    <span class="skill-chip">Combat Hitboxes</span>
+                                </div>
+                            </div>
+
+                            <!-- Skill 3 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">Combat Systems & State Machines (FSM)</span>
+                                    <span class="skill-level-badge level-working">Working Knowledge</span>
+                                </div>
+                                <div class="skill-detail-text">Animation state machines, modular Finite State Machines
+                                    (FSM) for player and boss states, attack cooldowns, and invulnerability frames.
+                                </div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">State Machines</span>
+                                    <span class="skill-chip">Animation Blending</span>
+                                    <span class="skill-chip">Cooldown Systems</span>
+                                </div>
+                            </div>
+
+                            <!-- Skill 4 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">Game Systems, Economy & FX</span>
+                                    <span class="skill-level-badge level-working">Working Knowledge</span>
+                                </div>
+                                <div class="skill-detail-text">Persistent coin economies, modular upgrade shop menus,
+                                    dynamic wave spawners, particle explosions, and screen shake impulse.</div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">Coin Economy</span>
+                                    <span class="skill-chip">Upgrade Shop</span>
+                                    <span class="skill-chip">Particle FX</span>
+                                    <span class="skill-chip">Screen Shake</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-project-proof">
+                            <span class="proof-label">Demonstrated in:</span>
+                            <a href="#projects" class="proof-link">NEURAL OVERRIDE</a>,
+                            <a href="#projects" class="proof-link">RPG Game Development</a>,
+                            <a href="#projects" class="proof-link">Roll-a-Ball 3D</a>
+                        </div>
+                    </div>
+
+                    <!-- Panel 2: Programming Languages & CS -->
+                    <div class="skill-domain-card">
+                        <div class="domain-card-header">
+                            <div class="domain-title-group">
+                                <span class="domain-icon">💻</span>
+                                <h3 class="domain-title">Programming & CS Foundations</h3>
+                            </div>
+                            <span class="domain-tag purple">Core Languages</span>
+                        </div>
+                        <div class="skill-items-stack">
+                            <!-- Skill 1 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">C# (Unity Gameplay & OOP)</span>
+                                    <span class="skill-level-badge level-proficient">Active Focus</span>
+                                </div>
+                                <div class="skill-detail-text">Primary language for Unity gameplay systems,
+                                    Object-Oriented design, component architecture, delegates, Unity Actions, and clean
+                                    separation of concerns.</div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">C# OOP</span>
+                                    <span class="skill-chip">Delegates & Events</span>
+                                    <span class="skill-chip">Component Pattern</span>
+                                    <span class="skill-chip">LINQ Basics</span>
+                                </div>
+                            </div>
+
+                            <!-- Skill 2 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">C (Data Structures & Systems)</span>
+                                    <span class="skill-level-badge level-academic">Academic Core</span>
+                                </div>
+                                <div class="skill-detail-text">Control structures, functions, pointers, dynamic memory
+                                    allocation (malloc/free), algorithmic complexity, and fundamental data structures.
+                                </div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">Pointers</span>
+                                    <span class="skill-chip">Memory Allocation</span>
+                                    <span class="skill-chip">Data Structures</span>
+                                    <span class="skill-chip">Time Complexity</span>
+                                </div>
+                            </div>
+
+                            <!-- Skill 3 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">Python (Scripting & Automation)</span>
+                                    <span class="skill-level-badge level-certified">Certified</span>
+                                </div>
+                                <div class="skill-detail-text">University of Michigan Specialization: data structures,
+                                    algorithmic problem solving, automated workflows, file I/O, and data processing.
+                                </div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">Univ. of Michigan Cert</span>
+                                    <span class="skill-chip">Scripting</span>
+                                    <span class="skill-chip">File I/O</span>
+                                    <span class="skill-chip">Data Handling</span>
+                                </div>
+                            </div>
+
+                            <!-- Skill 4 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">Java (Object-Oriented Fundamentals)</span>
+                                    <span class="skill-level-badge level-academic">Foundational</span>
+                                </div>
+                                <div class="skill-detail-text">Core syntax, class hierarchies, inheritance,
+                                    polymorphism, encapsulation, method overriding, and basic exception handling
+                                    paradigms.</div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">OOP Concepts</span>
+                                    <span class="skill-chip">Inheritance</span>
+                                    <span class="skill-chip">Polymorphism</span>
+                                    <span class="skill-chip">Encapsulation</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-project-proof">
+                            <span class="proof-label">Academic Proof:</span>
+                            <span>SVIT B.E. Coursework (CPI: 8.30)</span> &bull;
+                            <a href="#education" class="proof-link">Michigan Python Specialization</a>
+                        </div>
+                    </div>
+
+                    <!-- Panel 3: Web Development -->
+                    <div class="skill-domain-card">
+                        <div class="domain-card-header">
+                            <div class="domain-title-group">
+                                <span class="domain-icon">🌐</span>
+                                <h3 class="domain-title">Web Development & Frontend UI</h3>
+                            </div>
+                            <span class="domain-tag gold">Full-Stack Web</span>
+                        </div>
+                        <div class="skill-items-stack">
+                            <!-- Skill 1 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">HTML5 & Modern CSS3</span>
+                                    <span class="skill-level-badge level-proficient">Proficient</span>
+                                </div>
+                                <div class="skill-detail-text">Clean semantic HTML5, modern CSS custom properties
+                                    (variables), responsive flexbox and CSS grid layouts, and smooth keyframe
+                                    micro-animations.</div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">Semantic HTML5</span>
+                                    <span class="skill-chip">Flexbox / Grid</span>
+                                    <span class="skill-chip">CSS Variables</span>
+                                    <span class="skill-chip">Animations</span>
+                                </div>
+                            </div>
+
+                            <!-- Skill 2 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">JavaScript (ES6+)</span>
+                                    <span class="skill-level-badge level-working">Working Knowledge</span>
+                                </div>
+                                <div class="skill-detail-text">DOM manipulation, keyboard & pointer event listeners,
+                                    client-side state management, asynchronous fetch routines, and Web Audio API
+                                    synthesis.</div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">DOM Manipulation</span>
+                                    <span class="skill-chip">Event Listeners</span>
+                                    <span class="skill-chip">State Loops</span>
+                                    <span class="skill-chip">Web Audio API</span>
+                                </div>
+                            </div>
+
+                            <!-- Skill 3 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">Responsive Design & Deployment</span>
+                                    <span class="skill-level-badge level-proficient">Proficient</span>
+                                </div>
+                                <div class="skill-detail-text">Mobile-first responsive design, cross-browser
+                                    compatibility, continuous deployment via Netlify, and GitHub Pages static hosting.
+                                </div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">Responsive Web</span>
+                                    <span class="skill-chip">Netlify CI/CD</span>
+                                    <span class="skill-chip">GitHub Pages</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-project-proof">
+                            <span class="proof-label">Demonstrated in:</span>
+                            <a href="#projects" class="proof-link">Pomodoro Pro Timer</a>,
+                            <a href="#projects" class="proof-link">Clean Calculator</a>,
+                            <a href="#projects" class="proof-link">Rose Day Showcase</a>
+                        </div>
+                    </div>
+
+                    <!-- Panel 4: Tools, Databases & AI -->
+                    <div class="skill-domain-card">
+                        <div class="domain-card-header">
+                            <div class="domain-title-group">
+                                <span class="domain-icon">🛠️</span>
+                                <h3 class="domain-title">Tools, Databases & AI APIs</h3>
+                            </div>
+                            <span class="domain-tag green">Workflow & Tools</span>
+                        </div>
+                        <div class="skill-items-stack">
+                            <!-- Skill 1 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">Git & GitHub</span>
+                                    <span class="skill-level-badge level-proficient">Proficient</span>
+                                </div>
+                                <div class="skill-detail-text">Daily version control workflow: branch isolation, atomic
+                                    commit messages, pull requests, merge conflict resolution, and remote repositories.
+                                </div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">Git CLI</span>
+                                    <span class="skill-chip">Branch Isolation</span>
+                                    <span class="skill-chip">Pull Requests</span>
+                                    <span class="skill-chip">Repository Mgmt</span>
+                                </div>
+                            </div>
+
+                            <!-- Skill 2 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">Google Gemini API Integration</span>
+                                    <span class="skill-level-badge level-working">Applied</span>
+                                </div>
+                                <div class="skill-detail-text">Integrated Gemini API in full applications; structured
+                                    prompt engineering, automated blog content generation, error handling, and API
+                                    debugging.</div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">Gemini API</span>
+                                    <span class="skill-chip">Prompt Engineering</span>
+                                    <span class="skill-chip">AI-Assisted Dev</span>
+                                </div>
+                            </div>
+
+                            <!-- Skill 3 -->
+                            <div class="skill-item-block">
+                                <div class="skill-item-top">
+                                    <span class="skill-label">Antigravity CLI & Dev Ecosystem</span>
+                                    <span class="skill-level-badge level-working">Applied Tooling</span>
+                                </div>
+                                <div class="skill-detail-text">Antigravity CLI with MCP server integration for rapid
+                                    script scaffolding and game scene generation; VS Code extensions, and MySQL basics.
+                                </div>
+                                <div class="skill-chip-row">
+                                    <span class="skill-chip">Antigravity CLI</span>
+                                    <span class="skill-chip">MCP Servers</span>
+                                    <span class="skill-chip">VS Code</span>
+                                    <span class="skill-chip">MySQL Basics</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-project-proof">
+                            <span class="proof-label">Demonstrated in:</span>
+                            <a href="#projects" class="proof-link">AI Blog Generator</a>,
+                            <a href="#projects" class="proof-link">NEURAL OVERRIDE CLI Scaffolding</a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Panel 5: Professional Leadership & Discipline (Full-Width Spotlight) -->
+                <div class="leadership-spotlight-card">
+                    <div class="domain-card-header" style="border-bottom: none; padding-bottom: 0;">
+                        <div class="domain-title-group">
+                            <span class="domain-icon">🥋</span>
+                            <h3 class="domain-title">Professional Skills, Leadership & Work Ethic</h3>
+                        </div>
+                        <span class="domain-tag"
+                            style="color: #FF007F; background: rgba(255, 0, 127, 0.1); border-color: rgba(255, 0, 127, 0.3);">Real-World
+                            Proven</span>
+                    </div>
+
+                    <div class="leadership-grid-3">
+                        <div class="lead-item-box">
+                            <h4>
+                                <span>🏛️ Training & Placement Coordinator</span>
+                                <span class="lead-badge tp">SVIT, Vasad</span>
+                            </h4>
+                            <p class="lead-desc">
+                                Junior T&P Coordinator at SVIT (Feb 2026 – Present). Support placement activities,
+                                workshops, student communication, and liaison between students and the Training &
+                                Placement Cell. Managing recruitment logistics and student preparation.
+                            </p>
+                        </div>
+
+                        <div class="lead-item-box">
+                            <h4>
+                                <span>🥋 Black Belt 2nd DAN Instructor</span>
+                                <span class="lead-badge karate">10+ Yrs Discipline</span>
+                            </h4>
+                            <p class="lead-desc">
+                                Certified 2nd DAN Black Belt by Karate India Organization (KIO). Instructor at The
+                                Bhayli Dojo: conduct martial arts training sessions, mentor junior students, and foster
+                                extreme mental focus, consistency, and resilience under pressure.
+                            </p>
+                        </div>
+
+                        <div class="lead-item-box">
+                            <h4>
+                                <span>🚀 Hackathons & Technical Activities</span>
+                                <span class="lead-badge tech">Active Explorer</span>
+                            </h4>
+                            <p class="lead-desc">
+                                Participated in Mecia Hacks 2.0 hackathon, attended Google Cloud Community Day, webinars
+                                on AI and ethical hacking, and collegiate game development workshops. Strong team
+                                communicator, fast learner, and reliable collaborator.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Experience & Guild Lore -->
+        <section id="experience">
+            <div class="section-header">
+                <span class="section-badge">Guild Records</span>
+                <h2 class="section-title">Experience & Leadership</h2>
+            </div>
+
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <h3 class="timeline-title">Junior Training & Placement Coordinator</h3>
+                    <span class="timeline-badge">SVIT, Vasad • Feb 2026 – Present</span>
+                </div>
+                <p class="timeline-desc">
+                    Support placement activities, workshops, student communication, and coordination between students
+                    and the Training & Placement Cell. Facilitate employability development initiatives and campus
+                    hiring logistics.
+                </p>
+            </div>
+
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <h3 class="timeline-title">Karate Instructor</h3>
+                    <span class="timeline-badge">The Bhayli Dojo</span>
+                </div>
+                <p class="timeline-desc">
+                    Conduct martial arts training sessions, mentor junior students, and assist with class management and
+                    tournament coordination. Fostering discipline, focus, and physical conditioning.
+                </p>
+            </div>
+        </section>
+
+        <!-- Education & Achievements -->
+        <section id="education">
+            <div class="section-header">
+                <span class="section-badge">Academy & Laurels</span>
+                <h2 class="section-title">Education & Achievements</h2>
+            </div>
+
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <h3 class="timeline-title">Bachelor of Engineering – Computer Science & Designing</h3>
+                    <span class="timeline-badge">Aug 2024 – Present • CPI: 8.30</span>
+                </div>
+                <p class="timeline-desc">
+                    SVIT, Vasad (Affiliated with GTU). Focus on game engineering, algorithms, graphics, and interactive
+                    design.
+                </p>
+            </div>
+
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <h3 class="timeline-title">Higher Secondary (Science – PCM)</h3>
+                    <span class="timeline-badge">Bright Day School, Vadodara • 2024 • 83%</span>
+                </div>
+                <p class="timeline-desc">
+                    Physics, Chemistry, and Mathematics foundation with rigorous analytical training.
+                </p>
+            </div>
+
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <h3 class="timeline-title">Secondary School (Class X)</h3>
+                    <span class="timeline-badge">Bright Day School, Vadodara • 2022 • 91%</span>
+                </div>
+                <p class="timeline-desc">
+                    Outstanding academic distinction across mathematics, science, and computer fundamentals.
+                </p>
+            </div>
+
+            <div class="achievements-grid">
+                <div class="achievement-card">
+                    <div class="achievement-icon">📜</div>
+                    <div class="achievement-info">
+                        <h4>Python Certification</h4>
+                        <p>Programming for Everybody (Getting Started with Python) – University of Michigan.</p>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <div class="achievement-icon">🥋</div>
+                    <div class="achievement-info">
+                        <h4>Black Belt 2nd DAN</h4>
+                        <p>2nd(NI) DAN in Karate – Karate India Organization (KIO) Certified.</p>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <div class="achievement-icon">⚡</div>
+                    <div class="achievement-info">
+                        <h4>Mecia Hacks 2.0</h4>
+                        <p>Participated in hackathon building creative technology solutions.</p>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <div class="achievement-icon">☁️</div>
+                    <div class="achievement-info">
+                        <h4>Google Cloud Community Day</h4>
+                        <p>Attendee, Gandhinagar, Gujarat. Explored cloud architectures and AI trends.</p>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <div class="achievement-icon">🔐</div>
+                    <div class="achievement-info">
+                        <h4>AI in Ethical Hacking</h4>
+                        <p>Webinar participant hosted by AI CERTs on emerging cyber threats.</p>
+                    </div>
+                </div>
+
+                <div class="achievement-card">
+                    <div class="achievement-icon">🎮</div>
+                    <div class="achievement-info">
+                        <h4>Game Dev Workshops</h4>
+                        <p>Attended specialized college-level workshops on Unity workflows and scene design.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Boss Chamber: Contact -->
+        <section id="contact">
+            <div class="boss-chamber">
+                <span class="section-badge" style="color: var(--accent);">Final Boss Chamber</span>
+                <h2 class="section-title">Summon Bhavya For Your Team</h2>
+                <p class="section-desc">
+                    Ready to build unforgettable game mechanics, intelligent AI integrations, or high-performance web
+                    applications? Let's connect!
+                </p>
+
+                <div class="contact-links-grid">
+                    <a href="https://github.com/bhavya-9105" target="_blank" class="contact-btn"
+                        onclick="claimXp(100, 'Scouted GitHub')">
+                        🐙 GitHub Profile
+                    </a>
+                    <a href="https://bhavya-9105.itch.io/" target="_blank" class="contact-btn"
+                        onclick="claimXp(100, 'Checked itch.io')">
+                        🕹️ itch.io Games
+                    </a>
+                    <a href="https://www.linkedin.com/in/bhavya-shah-a256a1281" target="_blank" class="contact-btn"
+                        onclick="claimXp(100, 'Connected on LinkedIn')">
+                        💼 LinkedIn
+                    </a>
+                    <a href="mailto:24csd50@svitvasad.ac.in" class="contact-btn"
+                        onclick="claimXp(150, 'Dispatched Email')">
+                        ✉️ Send Email
+                    </a>
+                    <a href="tel:+916354366203" class="contact-btn" onclick="claimXp(150, 'Initiated Call')">
+                        📱 +91 63543 66203
+                    </a>
+                    <a href="Resume_Bhavya.pdf" target="_blank" class="contact-btn"
+                        style="border-color: var(--gold); color: var(--gold); font-weight: 700;"
+                        onclick="claimXp(150, 'Inspected Official Resume')">
+                        📄 Download Resume (PDF)
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 Bhavya Shah • Designed & Gamified with Web Audio API, Canvas 2D & Modern CSS</p>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-dim);">
+                💡 Tip: Try the Konami Code on your keyboard: [↑ ↑ ↓ ↓ ← → ← → B A]
+            </p>
+        </footer>
+    </div>
+
+    <!-- Trophies & Achievements Modal -->
+    <div id="trophyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">🏆 Adventurer Trophies</div>
+                <button class="modal-close" onclick="closeTrophyModal()">&times;</button>
+            </div>
+            <div id="trophyList">
+                <!-- Dynamically generated trophies -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Sound & Gamification Engine -->
+    <script>
+        /* ==========================================================
+           1. Web Audio API Synthesizer (No External Audio Files)
+           ========================================================== */
+        class RetroAudioEngine {
+            constructor() {
+                this.enabled = true;
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playBlip(freq = 440, duration = 0.08) {
+                if (!this.enabled) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            }
+
+            playCoin() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(987.77, now); // B5
+                osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(now + 0.35);
+            }
+
+            playLaser() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(880, now);
+                osc.frequency.exponentialRampToValueAtTime(110, now + 0.15);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(now + 0.15);
+            }
+
+            playLevelUp() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                    gain.gain.setValueAtTime(0.08, now + idx * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + idx * 0.1);
+                    osc.stop(now + idx * 0.1 + 0.2);
+                });
+            }
+        }
+
+        const audio = new RetroAudioEngine();
+
+        /* ==========================================================
+           2. Player XP, Coins, and Level System
+           ========================================================== */
+        const MAX_XP = 3000;
+        let playerState = {
+            xp: 0,
+            coins: 0,
+            level: 1,
+            claimedQuests: [],
+            unlockedTrophies: []
+        };
+
+        const ranks = [
+            { min: 0, title: "LVL 1 Novice Adventurer" },
+            { min: 400, title: "LVL 2 Script Apprentice" },
+            { min: 800, title: "LVL 3 C# Code Smith" },
+            { min: 1400, title: "LVL 4 Unity Combatant" },
+            { min: 2000, title: "LVL 5 Game Architect" },
+            { min: 2500, title: "LVL 6 AI Conjurer" },
+            { min: 3000, title: "LVL 10 Grandmaster Developer" }
+        ];
+
+        const allTrophies = [
+            { id: 'first_scroll', title: 'First Steps', desc: 'Explored the portfolio page', reward: 50 },
+            { id: 'resume_viewed', title: 'Resume Scout', desc: 'Inspected official Bhavya Shah Resume (PDF)', reward: 150 },
+            { id: 'github_scout', title: 'Code Inspector', desc: 'Explored GitHub repository source code', reward: 200 },
+            { id: 'quest_hunter', title: 'Quest Hunter', desc: 'Claimed XP from 3 different projects', reward: 200 },
+            { id: 'konami_cheat', title: 'God Mode Activated', desc: 'Triggered secret retro Konami Code', reward: 500 },
+            { id: 'recruiter_scout', title: 'Guild Recruiter', desc: 'Initiated contact / clicked Summon', reward: 100 },
+            { id: 'sound_enthusiast', title: 'Audio Synthesizer', desc: 'Toggled retro audio sound engine', reward: 50 },
+            { id: 'master_level', title: 'Maximum Ascension', desc: 'Reached 3000 XP Grandmaster rank', reward: 500 }
+        ];
+
+        // Load saved state from localStorage if available
+        try {
+            const saved = localStorage.getItem('bhavya_portfolio_gamified');
+            if (saved) {
+                playerState = Object.assign(playerState, JSON.parse(saved));
+            }
+        } catch (e) { }
+
+        function savePlayerState() {
+            try {
+                localStorage.setItem('bhavya_portfolio_gamified', JSON.stringify(playerState));
+            } catch (e) { }
+        }
+
+        function updateHudDisplay() {
+            // Update XP bar
+            const xpPct = Math.min(100, Math.floor((playerState.xp / MAX_XP) * 100));
+            document.getElementById('xpBarFill').style.width = xpPct + '%';
+            document.getElementById('xpText').textContent = `${playerState.xp} / ${MAX_XP} XP`;
+
+            // Update Level
+            let currentTitle = ranks[0].title;
+            for (let r of ranks) {
+                if (playerState.xp >= r.min) currentTitle = r.title;
+            }
+            document.getElementById('playerLevelDisplay').textContent = currentTitle;
+
+            // Coins
+            document.getElementById('coinCount').textContent = playerState.coins;
+
+            // Trophies count
+            document.getElementById('trophyCount').textContent = `${playerState.unlockedTrophies.length}/${allTrophies.length}`;
+
+            // Check Master trophy
+            if (playerState.xp >= MAX_XP && !playerState.unlockedTrophies.includes('master_level')) {
+                unlockTrophy('master_level');
+            }
+        }
+
+        function showToast(message, isLevelUp = false) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-item ${isLevelUp ? 'level-up' : ''}`;
+            toast.innerHTML = `<span>${isLevelUp ? '⭐' : '⚡'}</span> ${message}`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.4s';
+                setTimeout(() => toast.remove(), 400);
+            }, 3200);
+        }
+
+        function claimXp(amount, reason) {
+            const oldXp = playerState.xp;
+            playerState.xp = Math.min(MAX_XP, playerState.xp + amount);
+            savePlayerState();
+            updateHudDisplay();
+            audio.playCoin();
+            showToast(`+${amount} XP: ${reason}!`);
+
+            // Check if level changed
+            let oldLvl = ranks.filter(r => oldXp >= r.min).length;
+            let newLvl = ranks.filter(r => playerState.xp >= r.min).length;
+            if (newLvl > oldLvl) {
+                audio.playLevelUp();
+                showToast(`🏆 LEVEL UP! Reached ${ranks[newLvl - 1].title}`, true);
+            }
+        }
+
+        function claimQuestXp(button, xp, coins, questName) {
+            if (button.classList.contains('claimed')) return;
+            button.classList.add('claimed');
+            button.textContent = 'Claimed ✔';
+
+            playerState.coins += coins;
+            claimXp(xp, questName);
+
+            if (!playerState.claimedQuests.includes(questName)) {
+                playerState.claimedQuests.push(questName);
+            }
+
+            if (playerState.claimedQuests.length >= 3 && !playerState.unlockedTrophies.includes('quest_hunter')) {
+                unlockTrophy('quest_hunter');
+            }
+
+            savePlayerState();
+        }
+
+        function unlockTrophy(trophyId) {
+            if (playerState.unlockedTrophies.includes(trophyId)) return;
+            const trophy = allTrophies.find(t => t.id === trophyId);
+            if (!trophy) return;
+
+            playerState.unlockedTrophies.push(trophyId);
+            savePlayerState();
+            updateHudDisplay();
+            audio.playLevelUp();
+            showToast(`🏆 Trophy Unlocked: [${trophy.title}] (+${trophy.reward} XP)`, true);
+            playerState.xp = Math.min(MAX_XP, playerState.xp + trophy.reward);
+            updateHudDisplay();
+        }
+
+        /* ==========================================================
+           3. Recruiter Interactions & Resume Tracker
+           ========================================================== */
+        document.querySelectorAll('a[href*="Resume_Bhavya"]').forEach(link => {
+            link.addEventListener('click', () => {
+                claimXp(150, 'Inspected Official Resume');
+                unlockTrophy('resume_viewed');
+                if (audio.enabled) audio.playCoin();
+            });
+        });
+
+        document.querySelectorAll('a[href*="github.com"]').forEach(link => {
+            link.addEventListener('click', () => {
+                claimXp(100, 'Scouted GitHub Repository');
+                unlockTrophy('github_scout');
+                if (audio.enabled) audio.playBlip(550, 0.08);
+            });
+        });
+
+        /* ==========================================================
+           4. Background Particle Net
+           ========================================================== */
+        const bgCanvas = document.getElementById('bgCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        let bgDots = [];
+
+        function initBgCanvas() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+            bgDots = [];
+            const count = Math.min(50, Math.floor(window.innerWidth / 30));
+            for (let i = 0; i < count; i++) {
+                bgDots.push({
+                    x: Math.random() * bgCanvas.width,
+                    y: Math.random() * bgCanvas.height,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    r: Math.random() * 2 + 1
+                });
+            }
+        }
+        window.addEventListener('resize', initBgCanvas);
+        initBgCanvas();
+
+        function renderBg() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            bgCtx.fillStyle = 'rgba(0, 217, 255, 0.3)';
+            bgCtx.strokeStyle = 'rgba(123, 97, 255, 0.12)';
+
+            for (let i = 0; i < bgDots.length; i++) {
+                const d = bgDots[i];
+                d.x += d.vx;
+                d.y += d.vy;
+                if (d.x < 0) d.x = bgCanvas.width;
+                if (d.x > bgCanvas.width) d.x = 0;
+                if (d.y < 0) d.y = bgCanvas.height;
+                if (d.y > bgCanvas.height) d.y = 0;
+
+                bgCtx.beginPath();
+                bgCtx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+                bgCtx.fill();
+
+                for (let j = i + 1; j < bgDots.length; j++) {
+                    const d2 = bgDots[j];
+                    const dist = Math.hypot(d.x - d2.x, d.y - d2.y);
+                    if (dist < 120) {
+                        bgCtx.beginPath();
+                        bgCtx.moveTo(d.x, d.y);
+                        bgCtx.lineTo(d2.x, d2.y);
+                        bgCtx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(renderBg);
+        }
+        renderBg();
+
+        /* ==========================================================
+           5. HUD Controls, Filters, and Konami Easter Egg
+           ========================================================== */
+        // Sound toggle
+        const sfxBtn = document.getElementById('sfxToggleBtn');
+        sfxBtn.addEventListener('click', () => {
+            audio.enabled = !audio.enabled;
+            document.getElementById('sfxIcon').textContent = audio.enabled ? '🔊' : '🔇';
+            showToast(audio.enabled ? 'Sound FX Enabled' : 'Sound FX Muted');
+            if (audio.enabled) {
+                audio.playBlip(520, 0.1);
+                unlockTrophy('sound_enthusiast');
+            }
+        });
+
+        // Pro Mode / Gamer Mode Toggle
+        const modeSwitchBtn = document.getElementById('modeSwitchBtn');
+        modeSwitchBtn.addEventListener('click', () => {
+            const isPro = document.body.classList.toggle('pro-mode');
+            document.getElementById('modeIcon').textContent = isPro ? '🎮' : '💼';
+            document.getElementById('modeText').textContent = isPro ? 'Gamer Mode' : 'Pro Mode';
+            showToast(isPro ? 'Pro / Recruiter Mode Activated' : 'Gamer Mode Activated');
+            if (audio.enabled) audio.playBlip(600, 0.1);
+        });
+
+        // Filter Bar
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.dataset.filter;
+
+                document.querySelectorAll('.quest-card').forEach(card => {
+                    if (filter === 'all' || card.dataset.category === filter) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (audio.enabled) audio.playBlip(480, 0.05);
+            });
+        });
+
+
+
+        // Trophies Modal
+        const trophyModal = document.getElementById('trophyModal');
+        function renderTrophyList() {
+            const list = document.getElementById('trophyList');
+            list.innerHTML = '';
+            allTrophies.forEach(t => {
+                const unlocked = playerState.unlockedTrophies.includes(t.id);
+                const row = document.createElement('div');
+                row.className = `trophy-row ${unlocked ? 'unlocked' : ''}`;
+                row.innerHTML = `
+                    <div style="font-size: 1.6rem">${unlocked ? '🏆' : '🔒'}</div>
+                    <div>
+                        <div style="font-weight: 700; color: ${unlocked ? '#FFD700' : '#888'}">${t.title}</div>
+                        <div style="font-size: 0.8rem; color: #aaa">${t.desc}</div>
+                    </div>
+                    <div class="trophy-status ${unlocked ? 'unlocked' : 'locked'}">
+                        ${unlocked ? 'UNLOCKED' : '+ ' + t.reward + ' XP'}
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        document.getElementById('trophyBtn').addEventListener('click', () => {
+            renderTrophyList();
+            trophyModal.classList.add('show');
+            if (audio.enabled) audio.playBlip(600, 0.08);
+        });
+
+        document.getElementById('playerProfileTrigger').addEventListener('click', () => {
+            renderTrophyList();
+            trophyModal.classList.add('show');
+        });
+
+        function closeTrophyModal() {
+            trophyModal.classList.remove('show');
+        }
+
+        trophyModal.addEventListener('click', e => {
+            if (e.target === trophyModal) closeTrophyModal();
+        });
+
+        // Konami Code Detection (↑ ↑ ↓ ↓ ← → ← → B A)
+        const konamiSequence = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
+        let konamiIndex = 0;
+
+        window.addEventListener('keydown', e => {
+            const key = e.key.toLowerCase();
+            if (key === konamiSequence[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiSequence.length) {
+                    unlockTrophy('konami_cheat');
+                    document.body.style.filter = 'drop-shadow(0 0 15px #FF007F)';
+                    setTimeout(() => document.body.style.filter = '', 4000);
+                    showToast('🎉 KONAMI CHEAT ACTIVATED: OVERDRIVE GOD MODE!', true);
+                    konamiIndex = 0;
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
+
+        // First scroll detection
+        let hasScrolled = false;
+        window.addEventListener('scroll', () => {
+            if (!hasScrolled && window.scrollY > 150) {
+                hasScrolled = true;
+                unlockTrophy('first_scroll');
+            }
+        });
+
+        // Initialize HUD
+        updateHudDisplay();
+    </script>
+</body>
+
+</html>
